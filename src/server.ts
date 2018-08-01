@@ -14,13 +14,15 @@ const SERVER_CONFIGURATION: ServerOptions = {
         cors: {
             origin: ['*']
         }
+    },
+    compression: {
+        minBytes: 1024
     }
 };
 
 const server: any = new Server(SERVER_CONFIGURATION);
 
 const initialize = async () => {
-
     await server.register({
         plugin: require('hapi-pino'),
         options: {

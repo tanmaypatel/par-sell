@@ -1,5 +1,8 @@
 import { Server } from 'hapi';
 
+import { authenticationFacade } from './auth/authentication-facade';
+import { default as authenticationRoutes } from './auth/routes';
+
 const configure = async (server: Server): Promise<any> => {
 
     /*****************************/
@@ -15,6 +18,18 @@ const configure = async (server: Server): Promise<any> => {
             };
         }
     });
+
+    /************************/
+    /* Setup Authentication */
+    /************************/
+
+    await authenticationFacade.configureAuthenticationStrategies(server);
+
+    server.route(authenticationRoutes);
+
+    /**************************/
+    /* Setup Protected Routes */
+    /**************************/
 };
 
 export { configure };
