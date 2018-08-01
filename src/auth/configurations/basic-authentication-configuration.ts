@@ -1,19 +1,31 @@
-import * as config from 'config';
+import { UsersRepository } from '../repositories/users.repository';
+import { User } from '../models/user';
+import { UserRole } from '../models/user-role';
+import { UserRolesRepository } from '../repositories/user-roles.repository';
 
-import { Role } from '../models/role';
+const validate = async (request: any, email: string, password: string, h: any) => {
+    const isPasswordMatching: boolean = await UsersRepository.validatePassword(email, password);
 
-const validate = async (request: any, username: string, password: string, h: any) => {
-    if (username === 'dummy' && password === 'dummy') {
-        const credentials: any = {
-            userId: 'dummy',
-            profile: {},
-            role: Role.USER
-        };
+    if (isPasswordMatching) {
+        const matchedUser: User = await UsersRepository.retrieveByEmail(email);
 
-        return {
-            credentials: credentials,
-            isValid: true
-        };
+        if (matchedUser.isActive) {
+            const userRole: UserRole = await UserRolesRepository.retrieveByUserId(matchedUser.userId);
+
+            return {
+                credentials: {
+                    userId: matchedUser.userId,
+                    profile: matchedUser,
+                    role: userRole.role
+                },
+                isValid: true
+            };
+        } else {
+            return {
+                credentials: null,
+                isValid: false
+            };
+        }
     } else {
         return {
             credentials: null,

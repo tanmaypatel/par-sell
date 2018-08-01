@@ -7,6 +7,18 @@ const config: any = {
             issuer: 'par-sell-api__default',
             audience: 'par-sell-api-consumer__default'
         }
+    },
+    repository: {
+        sqlite: {
+            filename: './dist/default.db'
+        },
+        postgres: {
+            host: 'localhost',
+            port: 5432,
+            database: 'parsell',
+            user: 'postgres',
+            password: 'postgres'
+        }
     }
 };
 

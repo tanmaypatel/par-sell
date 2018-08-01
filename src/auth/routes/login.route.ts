@@ -11,22 +11,15 @@ module.exports = async (request: Request, h: ResponseToolkit) => {
     }
 
     const credentials: any = request.auth.credentials as any;
-    const profile: any = credentials.profile;
+    const profile: User = credentials.profile;
     const role: Role = credentials.role;
 
-    const user: User = new User({
-        userId: credentials.userId,
-        email: profile.email,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        isActive: profile.isActive
-    });
-
-    const accessToken: string = AuthenticationTokenService.signJWTToken(user, role);
+    const accessToken: string = AuthenticationTokenService.signJWTToken(profile, role);
 
     return {
-        accessToken: accessToken,
-        profile: user.toJS(),
-        role: role
+        userId: profile.userId,
+        profile: profile.toJS(),
+        role: role,
+        accessToken: accessToken
     };
 };
