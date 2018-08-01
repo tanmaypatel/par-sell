@@ -14,7 +14,7 @@ export class AuthenticationTokenService {
             config.get('authentication.token.secret'),
             {
                 algorithm: 'HS256',
-                expiresIn: '15m',
+                expiresIn: '1h',
                 issuer: config.get('authentication.token.issuer'),
                 audience: config.get('authentication.token.audience')
             }
