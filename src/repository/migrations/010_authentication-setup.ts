@@ -29,7 +29,7 @@ async function createUserRolesTable(knex: Knex): Promise<SchemaBuilder> {
     return Bluebird.resolve()
         .then(() => {
             return knex.schema.createTableIfNotExists(UserRolesRepository.TABLE_NAME, (table: CreateTableBuilder) => {
-                table.uuid('userId').notNullable().primary();
+                table.uuid('userId').references('userId').inTable(UsersRepository.TABLE_NAME).notNullable().primary();
                 table.string('role').notNullable();
                 table.timestamp('createdAt').notNullable();
                 table.timestamp('updatedAt').notNullable();

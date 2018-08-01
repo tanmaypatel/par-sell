@@ -10,7 +10,7 @@ const config: any = {
     },
     repository: {
         sqlite: {
-            filename: './dist/default.db'
+            filename: './dist/default.db' // needs to be changed for migration
         },
         postgres: {
             host: 'localhost',
