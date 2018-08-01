@@ -3,6 +3,7 @@ import { Server } from 'hapi';
 import { authenticationFacade } from './auth/authentication-facade';
 import { default as authenticationRoutes } from './auth/routes';
 import { default as tractorRoutes } from './tractors/routes';
+import { default as parcelRoutes } from './parcels/routes';
 
 const configure = async (server: Server): Promise<any> => {
 
@@ -32,6 +33,7 @@ const configure = async (server: Server): Promise<any> => {
     /* Setup Protected Routes */
     /**************************/
     server.route(tractorRoutes);
+    server.route(parcelRoutes);
 };
 
 export { configure };
