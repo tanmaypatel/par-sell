@@ -3,7 +3,7 @@ import { List } from 'immutable';
 import * as Boom from 'boom';
 
 import { Tractor } from '../models/tractor';
-import { SearchTractorsCommand } from '../commands/search-tractor.command';
+import { SearchTractorsCommand } from '../commands/search-tractors.command';
 import { ICredentials } from '../../auth/models/credentials';
 import { logger } from '../../logging/logger';
 
