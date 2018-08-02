@@ -1,4 +1,4 @@
-import { Request, ResponseToolkit, RequestQuery } from 'hapi';
+import { Request, ResponseToolkit } from 'hapi';
 import { List } from 'immutable';
 import * as Boom from 'boom';
 

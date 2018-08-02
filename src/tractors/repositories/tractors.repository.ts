@@ -1,4 +1,4 @@
-import { omit, extend, map } from 'lodash';
+import { extend, map } from 'lodash';
 import * as moment from 'moment';
 import { Transaction, QueryBuilder } from 'knex';
 import * as uuid from 'uuid/v4';

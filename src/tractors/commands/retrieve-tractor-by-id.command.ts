@@ -1,7 +1,6 @@
 import { TractorsRepository } from '../repositories/tractors.repository';
 
 import { Tractor } from '../models/tractor';
-import { List } from 'immutable';
 
 export class RetrieveTractorByIdCommand {
     private _tractorId: string;
