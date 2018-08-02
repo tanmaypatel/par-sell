@@ -3,6 +3,7 @@ import { User } from '../models/user';
 import { UserRole } from '../models/user-role';
 import { UserRolesRepository } from '../repositories/user-roles.repository';
 import { ICredentials } from '../models/credentials';
+import { logger } from '../../logging/logger';
 
 const validate = async (request: any, email: string, password: string, h: any) => {
     const isPasswordMatching: boolean = await UsersRepository.validatePassword(email, password);
@@ -24,12 +25,18 @@ const validate = async (request: any, email: string, password: string, h: any) =
                 isValid: true
             };
         } else {
+
+            logger.info(`Login attempt from inactive user with email ${email}`);
+
             return {
                 credentials: null,
                 isValid: false
             };
         }
     } else {
+
+        logger.info(`Email or Password not matching for ${email}`);
+
         return {
             credentials: null,
             isValid: false
