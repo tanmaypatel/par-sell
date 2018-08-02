@@ -1,6 +1,6 @@
 {
   "name": "par-sell",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Assignment for Sell Any Car",
   "main": "dist/server.js",
   "author": "Tanmay Patel (me@tanmaypatel.com)",
