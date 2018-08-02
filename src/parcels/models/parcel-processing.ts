@@ -2,13 +2,14 @@ import { Record } from 'immutable';
 import { Moment } from 'moment';
 import { Tractor } from '../../tractors/models/tractor';
 
-export interface IParcelForProcessing {
+export interface IParcelProcessing {
+    processingId?: string;
     parcelId: string;
-    parcel?: ParcelForProcessing;
+    parcel?: ParcelProcessing;
     tractorId: string;
     tractor?: Tractor;
     date: Moment;
-    occupiedArea: number;
+    occupiedAreaInSquareFeet: number;
     createdBy?: string;
     createdAt?: Moment;
     updatedBy?: string;
@@ -17,6 +18,7 @@ export interface IParcelForProcessing {
 
 // tslint:disable-next-line:variable-name
 const ParcelForProcessingRecord = Record({
+    processingId: '',
     parcelId: '',
     parcel: null,
     tractorId: '',
@@ -29,19 +31,20 @@ const ParcelForProcessingRecord = Record({
     updatedAt: null
 });
 
-export class ParcelForProcessing extends ParcelForProcessingRecord implements IParcelForProcessing {
+export class ParcelProcessing extends ParcelForProcessingRecord implements IParcelProcessing {
+    processingId: string;
     parcelId: string;
-    parcel: ParcelForProcessing;
+    parcel: ParcelProcessing;
     tractorId: string;
     tractor: Tractor;
     date: Moment;
-    occupiedArea: number;
+    occupiedAreaInSquareFeet: number;
     createdBy: string;
     createdAt: Moment;
     updatedBy: string;
     updatedAt: Moment;
 
-    constructor(props: IParcelForProcessing) {
+    constructor(props: IParcelProcessing) {
         super(props);
     }
 }

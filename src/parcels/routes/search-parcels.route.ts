@@ -27,7 +27,7 @@ module.exports = async (request: Request, h: ResponseToolkit) => {
         if (Boom.isBoom(error)) {
             throw error;
         } else {
-            throw Boom.internal(`Not able to search parcels for query ${q}`);
+            throw Boom.internal(`Unable to search parcels for query ${q}`);
         }
     }
 };

@@ -1,4 +1,4 @@
-import { omit, extend, map } from 'lodash';
+import { extend, map, omit } from 'lodash';
 import * as moment from 'moment';
 import { Transaction, QueryBuilder } from 'knex';
 import * as uuid from 'uuid/v4';
@@ -8,6 +8,7 @@ import { default as knex } from '../../repository/knex';
 import { Parcel } from '../models/parcel';
 import { List } from 'immutable';
 import { User } from '../../auth/models/user';
+import { ParcelsProcessingRepository } from './parcels-processing.repository';
 
 export class ParcelsRepository {
     static get TABLE_NAME(): string {
@@ -49,14 +50,18 @@ export class ParcelsRepository {
     }
 
     static async retrieveById(parcelId: string): Promise<Parcel> {
-        const parcels: Parcel[] = await ParcelsRepository._retrieveByIds([parcelId]);
-        return parcels.length ? parcels[0] : null;
+        const parcels: List<Parcel> = await ParcelsRepository.retrieveByIds([parcelId]);
+        return parcels.size ? parcels.get(0) : null;
     }
 
     static async search(query: string): Promise<List<Parcel>> {
         const queryBuilder: QueryBuilder = knex
-            .select('*')
+            .select([
+                `${ParcelsRepository.TABLE_NAME}.*`,
+                `${ParcelsProcessingRepository.TABLE_NAME}.tractorId`
+            ])
             .from(ParcelsRepository.TABLE_NAME)
+            .leftJoin(ParcelsProcessingRepository.TABLE_NAME, `${ParcelsProcessingRepository.TABLE_NAME}.parcelId`, `${ParcelsRepository.TABLE_NAME}.parcelId`)
             .where(knex.raw('lower("name") like ?', `%${query.toLowerCase()}%`))
             .orWhere(knex.raw('lower("culture") like ?', `%${query.toLowerCase()}%`))
             .orderBy('name', 'desc')
@@ -84,8 +89,12 @@ export class ParcelsRepository {
         }
 
         const queryBuilder: QueryBuilder = knex
-            .select('*')
+            .select([
+                `${ParcelsRepository.TABLE_NAME}.*`,
+                `${ParcelsProcessingRepository.TABLE_NAME}.tractorId`
+            ])
             .from(ParcelsRepository.TABLE_NAME)
+            .leftJoin(ParcelsProcessingRepository.TABLE_NAME, `${ParcelsProcessingRepository.TABLE_NAME}.parcelId`, `${ParcelsRepository.TABLE_NAME}.parcelId`)
             .orderBy('updatedAt', 'desc')
             .offset(pageStart)
             .limit(pageSize);
@@ -102,34 +111,15 @@ export class ParcelsRepository {
         return List(parcels);
     }
 
-    static _deserialize(parcelData: any): Parcel {
-        return new Parcel(
-            extend(parcelData, {
-                areaInSquareFeet: parseFloat(parcelData.areaInSquareFeet),
-                createdAt: moment.utc(parcelData.createdAt),
-                updatedAt: moment.utc(parcelData.updatedAt)
-            })
-        );
-    }
-
-    private static _serialize(parcel: Parcel): any {
-        const serializedData: any = parcel.toJS();
-
-        extend(serializedData, {
-            createdBy: serializedData.createdBy ? serializedData.createdBy : null,
-            createdAt: serializedData.createdAt ? serializedData.createdAt.toDate() : null,
-            updatedBy: serializedData.updatedBy ? serializedData.updatedBy : null,
-            updatedAt: serializedData.updatedAt ? serializedData.updatedAt.toDate() : null
-        });
-
-        return serializedData;
-    }
-
-    private static async _retrieveByIds(parcelIds: string[]): Promise<Parcel[]> {
+    static async retrieveByIds(parcelIds: string[]): Promise<List<Parcel>> {
         const queryBuilder: QueryBuilder = knex
-            .select('*')
+            .select([
+                `${ParcelsRepository.TABLE_NAME}.*`,
+                `${ParcelsProcessingRepository.TABLE_NAME}.tractorId`
+            ])
             .from(ParcelsRepository.TABLE_NAME)
-            .whereIn('parcelId', parcelIds);
+            .leftJoin(ParcelsProcessingRepository.TABLE_NAME, `${ParcelsProcessingRepository.TABLE_NAME}.parcelId`, `${ParcelsRepository.TABLE_NAME}.parcelId`)
+            .whereIn(`${ParcelsRepository.TABLE_NAME}.parcelId`, parcelIds);
 
         const rows: any[] = await queryBuilder;
         let parcels: Parcel[] = [];
@@ -140,6 +130,30 @@ export class ParcelsRepository {
             });
         }
 
-        return parcels;
+        return List(parcels);
+    }
+
+    private static _deserialize(parcelData: any): Parcel {
+        return new Parcel(
+            extend(omit(parcelData, 'tractorId'), {
+                isProcessed: parcelData.tractorId ? true : false,
+                areaInSquareFeet: parseFloat(parcelData.areaInSquareFeet),
+                createdAt: moment.utc(parcelData.createdAt),
+                updatedAt: moment.utc(parcelData.updatedAt)
+            })
+        );
+    }
+
+    private static _serialize(parcel: Parcel): any {
+        const serializedData: any = omit(parcel.toJS(), 'isProcessed');
+
+        extend(serializedData, {
+            createdBy: serializedData.createdBy ? serializedData.createdBy : null,
+            createdAt: serializedData.createdAt ? serializedData.createdAt.toDate() : null,
+            updatedBy: serializedData.updatedBy ? serializedData.updatedBy : null,
+            updatedAt: serializedData.updatedAt ? serializedData.updatedAt.toDate() : null
+        });
+
+        return serializedData;
     }
 }

@@ -50,8 +50,8 @@ export class TractorsRepository {
     }
 
     static async retrieveById(tractorId: string): Promise<Tractor> {
-        const tractors: Tractor[] = await TractorsRepository._retrieveByIds([tractorId]);
-        return tractors.length ? tractors[0] : null;
+        const tractors: List<Tractor> = await TractorsRepository.retrieveByIds([tractorId]);
+        return tractors.size ? tractors.get(0) : null;
     }
 
     static async retrieveByName(name: string): Promise<Tractor> {
@@ -113,6 +113,24 @@ export class TractorsRepository {
         return List(tractors);
     }
 
+    static async retrieveByIds(tractorIds: string[]): Promise<List<Tractor>> {
+        const queryBuilder: QueryBuilder = knex
+            .select('*')
+            .from(TractorsRepository.TABLE_NAME)
+            .whereIn('tractorId', tractorIds);
+
+        const rows: any[] = await queryBuilder;
+        let tractors: Tractor[] = [];
+
+        if (rows.length) {
+            tractors = map(rows, (currentRow: any) => {
+                return TractorsRepository._deserialize(currentRow);
+            });
+        }
+
+        return List(tractors);
+    }
+
     static _deserialize(tractorData: any): Tractor {
         return new Tractor(
             extend(tractorData, {
@@ -134,24 +152,6 @@ export class TractorsRepository {
         });
 
         return serializedData;
-    }
-
-    private static async _retrieveByIds(tractorIds: string[]): Promise<Tractor[]> {
-        const queryBuilder: QueryBuilder = knex
-            .select('*')
-            .from(TractorsRepository.TABLE_NAME)
-            .whereIn('tractorId', tractorIds);
-
-        const rows: any[] = await queryBuilder;
-        let tractors: Tractor[] = [];
-
-        if (rows.length) {
-            tractors = map(rows, (currentRow: any) => {
-                return TractorsRepository._deserialize(currentRow);
-            });
-        }
-
-        return tractors;
     }
 
     private static async _retrieveByNames(names: string[]): Promise<Tractor[]> {

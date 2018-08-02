@@ -28,7 +28,7 @@ module.exports = async (request: Request, h: ResponseToolkit) => {
         if (Boom.isBoom(error)) {
             throw error;
         } else {
-            throw Boom.internal(`Not able to retrieve parcels for page starting from ${pageStart} with size ${pageSize}`);
+            throw Boom.internal(`Unable to retrieve parcels for page starting from ${pageStart} with size ${pageSize}`);
         }
     }
 };

@@ -2,8 +2,8 @@ import { Request, ResponseToolkit, RequestQuery } from 'hapi';
 import { List } from 'immutable';
 import * as Boom from 'boom';
 
-import { Tractor } from '../models/tractor';
-import { RetrieveTractorsCommand } from '../commands/retrieve-tractors.command';
+import { ParcelProcessing } from '../models/parcel-processing';
+import { RetrieveParcelProcessingsCommand } from '../commands/retrieve-parcel-processings.command';
 import { ICredentials } from '../../auth/models/credentials';
 import { logger } from '../../logging/logger';
 
@@ -14,13 +14,13 @@ module.exports = async (request: Request, h: ResponseToolkit) => {
 
     const credentials: ICredentials = request.auth.credentials as ICredentials;
 
-    logger.info(`tractors being retrieved by user with userId ${credentials.profile.userId} for page starting from ${pageStart} with size ${pageSize}`);
+    logger.info(`Parcel Processings being retrieved by user with userId ${credentials.profile.userId} for page starting from ${pageStart} with size ${pageSize}`);
 
     try {
-        const command: RetrieveTractorsCommand = new RetrieveTractorsCommand(pageStart, pageSize);
+        const command: RetrieveParcelProcessingsCommand = new RetrieveParcelProcessingsCommand(pageStart, pageSize);
 
-        return command.execute().then((tractors: List<Tractor>) => {
-            return tractors.toJS();
+        return command.execute().then((parcelProcessings: List<ParcelProcessing>) => {
+            return parcelProcessings.toJS();
         });
     } catch (error) {
         logger.error(error);
@@ -28,7 +28,7 @@ module.exports = async (request: Request, h: ResponseToolkit) => {
         if (Boom.isBoom(error)) {
             throw error;
         } else {
-            throw Boom.internal(`Unable to retrieve tractors for page starting from ${pageStart} with size ${pageSize}`);
+            throw Boom.internal(`Unable to retrieve processing of Parcels for page starting from ${pageStart} with size ${pageSize}`);
         }
     }
 };

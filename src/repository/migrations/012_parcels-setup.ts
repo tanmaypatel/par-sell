@@ -13,7 +13,7 @@ async function createParcelsTable(knex: Knex): Promise<SchemaBuilder> {
                 table.uuid('parcelId').notNullable().primary();
                 table.string('name').notNullable().unique();
                 table.string('culture').notNullable();
-                table.string('areaInSquareFeet').notNullable();
+                table.float('areaInSquareFeet').notNullable();
                 table.uuid('createdBy').references('userId').inTable(UsersRepository.TABLE_NAME).notNullable();
                 table.timestamp('createdAt').notNullable();
                 table.uuid('updatedBy').references('userId').inTable(UsersRepository.TABLE_NAME).notNullable();
