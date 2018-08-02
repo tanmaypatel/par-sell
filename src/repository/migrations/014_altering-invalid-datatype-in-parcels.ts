@@ -4,7 +4,6 @@ import { CreateTableBuilder, SchemaBuilder } from 'knex';
 
 import { logger } from '../../logging/logger';
 import { ParcelsRepository } from '../../parcels/repositories/parcels.repository';
-import { UsersRepository } from '../../auth/repositories/users.repository';
 
 async function alterDataTypeOfAreaInParcelsTable(knex: Knex): Promise<SchemaBuilder> {
     return Bluebird.resolve()

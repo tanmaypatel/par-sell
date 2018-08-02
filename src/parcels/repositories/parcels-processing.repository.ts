@@ -1,4 +1,4 @@
-import { extend, map } from 'lodash';
+import { extend, map, omit } from 'lodash';
 import * as moment from 'moment';
 import { Transaction, QueryBuilder, Raw } from 'knex';
 import * as uuid from 'uuid/v4';
@@ -57,6 +57,16 @@ export class ParcelsProcessingRepository {
         return parcelProcessings.size ? parcelProcessings.get(0) : null;
     }
 
+    static async retrieveByParcelId(parcelId: string): Promise<ParcelProcessing> {
+        const parcelProcessings: List<ParcelProcessing> = await ParcelsProcessingRepository._retrieveByParcelIds([parcelId]);
+        return parcelProcessings.size ? parcelProcessings.get(0) : null;
+    }
+
+    static async retrieveByTractorId(tractorId: string): Promise<ParcelProcessing> {
+        const parcelProcessings: List<ParcelProcessing> = await ParcelsProcessingRepository._retrieveByTractorIds([tractorId]);
+        return parcelProcessings.size ? parcelProcessings.get(0) : null;
+    }
+
     static async retrievePage(pageStart?: number, pageSize?: number): Promise<List<ParcelProcessing>> {
         if (!pageStart) {
             pageStart = 0;
@@ -82,17 +92,7 @@ export class ParcelsProcessingRepository {
             });
         }
 
-        return List(parcelProcessings);
-    }
-
-    static async retrieveByParcelId(parcelId: string): Promise<ParcelProcessing> {
-        const parcelProcessings: List<ParcelProcessing> = await ParcelsProcessingRepository._retrieveByParcelIds([parcelId]);
-        return parcelProcessings.size ? parcelProcessings.get(0) : null;
-    }
-
-    static async retrieveByTractorId(tractorId: string): Promise<ParcelProcessing> {
-        const parcelProcessings: List<ParcelProcessing> = await ParcelsProcessingRepository._retrieveByTractorIds([tractorId]);
-        return parcelProcessings.size ? parcelProcessings.get(0) : null;
+        return await ParcelsProcessingRepository._enhanceChildren(List(parcelProcessings));
     }
 
     static async prepareReport(parcelName: string = '', tractorName: string = '', date: moment.Moment = null, culture: string = ''): Promise<List<ParcelProcessing>> {
@@ -128,7 +128,7 @@ export class ParcelsProcessingRepository {
         }
 
         if (date) {
-            const condition: Raw = knex.raw(`${ParcelsProcessingRepository.TABLE_NAME}.date = ?`, date.valueOf());
+            const condition: Raw = knex.raw(`${ParcelsProcessingRepository.TABLE_NAME}.date = ?`, date.format('YYYY-MM-DD'));
 
             if (hasAPreviousCondition) {
                 queryBuilder = queryBuilder.andWhere(condition);
@@ -160,7 +160,7 @@ export class ParcelsProcessingRepository {
             });
         }
 
-        return ParcelsProcessingRepository._enhanceChildren(List(parcelProcessings));
+        return await ParcelsProcessingRepository._enhanceChildren(List(parcelProcessings));
     }
 
     private static async _enhanceChildren(partialParcelProcessings: List<ParcelProcessing>): Promise<List<ParcelProcessing>> {
@@ -179,13 +179,15 @@ export class ParcelsProcessingRepository {
         const parcels: List<Parcel> = await ParcelsRepository.retrieveByIds(parcelIds);
         const tractors: List<Tractor> = await TractorsRepository.retrieveByIds(tractorIds);
 
-        const parcelsById: { [key: string]: Parcel } = parcels.reduce((accum: { [key: string]: Parcel }, datum: Parcel) => {
-            return (accum[datum.parcelId] = datum);
-        }, {});
+        const parcelsById: { [key: string]: Parcel } = {};
+        parcels.forEach((datum: Parcel) => {
+            parcelsById[datum.parcelId] = datum;
+        });
 
-        const tractorsById: { [key: string]: Tractor } = tractors.reduce((accum: { [key: string]: Tractor }, datum: Tractor) => {
-            return (accum[datum.tractorId] = datum);
-        }, {});
+        const tractorsById: { [key: string]: Tractor } = {};
+        tractors.forEach((datum: Tractor) => {
+            tractorsById[datum.tractorId] = datum;
+        });
 
         return partialParcelProcessings
             .map((datum: ParcelProcessing) => {
@@ -208,9 +210,10 @@ export class ParcelsProcessingRepository {
     }
 
     private static _serialize(parcelProcessing: ParcelProcessing): any {
-        const serializedData: any = parcelProcessing.toJS();
+        const serializedData: any = omit(parcelProcessing.toJS(), 'parcel', 'tractor');
 
         extend(serializedData, {
+            date: parcelProcessing.date.format('YYYY-MM-DD'),
             createdBy: serializedData.createdBy ? serializedData.createdBy : null,
             createdAt: serializedData.createdAt ? serializedData.createdAt.toDate() : null,
             updatedBy: serializedData.updatedBy ? serializedData.updatedBy : null,

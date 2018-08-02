@@ -15,7 +15,7 @@ async function createParcelsProcessingTable(knex: Knex): Promise<SchemaBuilder> 
                 table.uuid('processingId').notNullable().primary();
                 table.uuid('parcelId').references('parcelId').inTable(ParcelsRepository.TABLE_NAME).notNullable();
                 table.uuid('tractorId').references('tractorId').inTable(TractorsRepository.TABLE_NAME).notNullable();
-                table.date('date').notNullable().unique();
+                table.date('date').notNullable();
                 table.float('occupiedAreaInSquareFeet').notNullable();
                 table.uuid('createdBy').references('userId').inTable(UsersRepository.TABLE_NAME).notNullable();
                 table.timestamp('createdAt').notNullable();

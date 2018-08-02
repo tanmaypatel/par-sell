@@ -6,6 +6,7 @@ export interface IParcel {
     name: string;
     culture: string;
     areaInSquareFeet: number;
+    isProcessed?: boolean;
     createdBy?: string;
     createdAt?: Moment;
     updatedBy?: string;
@@ -18,6 +19,7 @@ const ParcelRecord = Record({
     name: '',
     culture: '',
     areaInSquareFeet: 0,
+    isProcessed: false,
     createdBy: '',
     createdAt: null,
     updatedBy: '',
@@ -29,6 +31,7 @@ export class Parcel extends ParcelRecord implements IParcel {
     name: string;
     culture: string;
     areaInSquareFeet: number;
+    isProcessed: boolean;
     createdBy: string;
     createdAt: Moment;
     updatedBy: string;

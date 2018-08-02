@@ -2,14 +2,14 @@ import { Record } from 'immutable';
 import { Moment } from 'moment';
 import { Tractor } from '../../tractors/models/tractor';
 
-export interface IParcelForProcessing {
+export interface IParcelProcessing {
     processingId?: string;
     parcelId: string;
     parcel?: ParcelProcessing;
     tractorId: string;
     tractor?: Tractor;
     date: Moment;
-    occupiedArea: number;
+    occupiedAreaInSquareFeet: number;
     createdBy?: string;
     createdAt?: Moment;
     updatedBy?: string;
@@ -31,20 +31,20 @@ const ParcelForProcessingRecord = Record({
     updatedAt: null
 });
 
-export class ParcelProcessing extends ParcelForProcessingRecord implements IParcelForProcessing {
+export class ParcelProcessing extends ParcelForProcessingRecord implements IParcelProcessing {
     processingId: string;
     parcelId: string;
     parcel: ParcelProcessing;
     tractorId: string;
     tractor: Tractor;
     date: Moment;
-    occupiedArea: number;
+    occupiedAreaInSquareFeet: number;
     createdBy: string;
     createdAt: Moment;
     updatedBy: string;
     updatedAt: Moment;
 
-    constructor(props: IParcelForProcessing) {
+    constructor(props: IParcelProcessing) {
         super(props);
     }
 }
