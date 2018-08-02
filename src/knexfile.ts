@@ -36,7 +36,7 @@ const stageConfig: Config = _.extend(
             min: 2,
             max: 10
         },
-        debug: true
+        debug: false
     },
     GENERAL_CONFIGS
 );
