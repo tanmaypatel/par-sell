@@ -1,7 +1,6 @@
 import { ParcelsRepository } from '../repositories/parcels.repository';
 
 import { Parcel } from '../models/parcel';
-import { List } from 'immutable';
 
 export class RetrieveParcelByIdCommand {
     private _parcelId: string;

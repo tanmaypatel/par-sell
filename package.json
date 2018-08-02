@@ -1,6 +1,6 @@
 {
   "name": "par-sell",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Assignment for Sell Any Car",
   "main": "dist/server.js",
   "author": "Tanmay Patel (me@tanmaypatel.com)",
@@ -15,7 +15,8 @@
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
-    "copy-static-assets": "node copy-static-assets.js"
+    "copy-static-assets": "node copy-static-assets.js",
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "argon2": "^0.19.3",
