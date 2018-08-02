@@ -21,7 +21,7 @@ const developmentConfig: Config = _.extend(
     GENERAL_CONFIGS
 );
 
-const stageConfig: Config = _.extend(
+const stagingConfig: Config = _.extend(
     {
         client: 'pg',
         searchPath: 'public',
@@ -62,7 +62,7 @@ const productionConfig: Config = _.extend(
 
 const knexConfig: { [key: string]: Config } = {
     development: developmentConfig,
-    stage: stageConfig,
+    staging: stagingConfig,
     production: productionConfig
 };
 
