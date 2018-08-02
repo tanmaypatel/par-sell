@@ -1,4 +1,4 @@
-import { omit, extend, map } from 'lodash';
+import { extend, map } from 'lodash';
 import * as moment from 'moment';
 import { Transaction, QueryBuilder } from 'knex';
 import * as uuid from 'uuid/v4';
@@ -49,8 +49,8 @@ export class ParcelsRepository {
     }
 
     static async retrieveById(parcelId: string): Promise<Parcel> {
-        const parcels: Parcel[] = await ParcelsRepository._retrieveByIds([parcelId]);
-        return parcels.length ? parcels[0] : null;
+        const parcels: List<Parcel> = await ParcelsRepository.retrieveByIds([parcelId]);
+        return parcels.size ? parcels.get(0) : null;
     }
 
     static async search(query: string): Promise<List<Parcel>> {
@@ -102,7 +102,25 @@ export class ParcelsRepository {
         return List(parcels);
     }
 
-    static _deserialize(parcelData: any): Parcel {
+    static async retrieveByIds(parcelIds: string[]): Promise<List<Parcel>> {
+        const queryBuilder: QueryBuilder = knex
+            .select('*')
+            .from(ParcelsRepository.TABLE_NAME)
+            .whereIn('parcelId', parcelIds);
+
+        const rows: any[] = await queryBuilder;
+        let parcels: Parcel[] = [];
+
+        if (rows.length) {
+            parcels = map(rows, (currentRow: any) => {
+                return ParcelsRepository._deserialize(currentRow);
+            });
+        }
+
+        return List(parcels);
+    }
+
+    private static _deserialize(parcelData: any): Parcel {
         return new Parcel(
             extend(parcelData, {
                 areaInSquareFeet: parseFloat(parcelData.areaInSquareFeet),
@@ -123,23 +141,5 @@ export class ParcelsRepository {
         });
 
         return serializedData;
-    }
-
-    private static async _retrieveByIds(parcelIds: string[]): Promise<Parcel[]> {
-        const queryBuilder: QueryBuilder = knex
-            .select('*')
-            .from(ParcelsRepository.TABLE_NAME)
-            .whereIn('parcelId', parcelIds);
-
-        const rows: any[] = await queryBuilder;
-        let parcels: Parcel[] = [];
-
-        if (rows.length) {
-            parcels = map(rows, (currentRow: any) => {
-                return ParcelsRepository._deserialize(currentRow);
-            });
-        }
-
-        return parcels;
     }
 }

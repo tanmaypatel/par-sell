@@ -3,8 +3,9 @@ import { Moment } from 'moment';
 import { Tractor } from '../../tractors/models/tractor';
 
 export interface IParcelForProcessing {
+    processingId?: string;
     parcelId: string;
-    parcel?: ParcelForProcessing;
+    parcel?: ParcelProcessing;
     tractorId: string;
     tractor?: Tractor;
     date: Moment;
@@ -17,6 +18,7 @@ export interface IParcelForProcessing {
 
 // tslint:disable-next-line:variable-name
 const ParcelForProcessingRecord = Record({
+    processingId: '',
     parcelId: '',
     parcel: null,
     tractorId: '',
@@ -29,9 +31,10 @@ const ParcelForProcessingRecord = Record({
     updatedAt: null
 });
 
-export class ParcelForProcessing extends ParcelForProcessingRecord implements IParcelForProcessing {
+export class ParcelProcessing extends ParcelForProcessingRecord implements IParcelForProcessing {
+    processingId: string;
     parcelId: string;
-    parcel: ParcelForProcessing;
+    parcel: ParcelProcessing;
     tractorId: string;
     tractor: Tractor;
     date: Moment;
